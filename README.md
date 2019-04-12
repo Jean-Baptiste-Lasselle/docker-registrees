@@ -29,7 +29,8 @@ Docker Registry Manager is a golang written, beego driven, web interface for int
 ### Docker-Compose (Recommended)
  Install compose (https://docs.docker.com/compose/install/), and then run the below commands
 
- ```bash
+```bash
+rm -fr ./docker-registrees
 git clone https://github.com/Jean-Baptiste-Lasselle/docker-registrees.git && cd docker-registrees 
 
 mkdir -p ./better
@@ -48,7 +49,7 @@ echo "    skip-tls-validation: true # REQUIRED for self signed certificates" >> 
 echo "    dockerhub-integration: true # Optional - compares to dockerhub to determine if image up to date" >> ./better/registries.yml
 docker-compose up -d
 firefox localhost:8081
-  ```
+```
 
 #### Environment Options:
  - MANAGER_PORT: Port to run on inside the docker container
