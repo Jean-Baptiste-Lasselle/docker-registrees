@@ -30,11 +30,21 @@ Docker Registry Manager is a golang written, beego driven, web interface for int
  Install compose (https://docs.docker.com/compose/install/), and then run the below commands
 
  ```bash
-  git clone https://github.com/snagles/docker-registry-manager.git && cd docker-registry-manager
-  vim registries.yml # add your registry
-  vim docker-compose.yml # Edit application settings e.g log level, port
-  docker-compose up -d
-  firefox localhost:8080
+git clone https://github.com/Jean-Baptiste-Lasselle/docker-registrees.git && cd docker-registry-manager
+if [ -f ./better/registries.yml ]; then  rm -f ./better/registries.yml;fi;
+
+echo "registries:" >> ./better/registries.yml
+echo "  localRegistry:" >> ./better/registries.yml
+echo "    displayname: registry.example.pour.vinse.com:5000" >> ./better/registries.yml
+echo "    url: http://localhost # Example https://localhost, http://remotehost.com" >> ./better/registries.yml
+echo "    port: 5000  # Example: 443, 8080, 5000" >> ./better/registries.yml
+echo "    username: exampleUser" >> ./better/registries.yml
+echo "    password: examplePassword" >> ./better/registries.yml
+echo "    refresh-rate: "5m" # Example: 60s, 5m, 1h" >> ./better/registries.yml
+echo "    skip-tls-validation: true # REQUIRED for self signed certificates" >> ./better/registries.yml
+echo "    dockerhub-integration: true # Optional - compares to dockerhub to determine if image up to date" >> ./better/registries.yml
+docker-compose up -d
+firefox localhost:8081
   ```
 
 #### Environment Options:
