@@ -31,6 +31,9 @@ Docker Registry Manager is a golang written, beego driven, web interface for int
 
  ```bash
 git clone https://github.com/Jean-Baptiste-Lasselle/docker-registrees.git && cd docker-registrees 
+
+mkdir -p ./better
+
 if [ -f ./better/registries.yml ]; then  rm -f ./better/registries.yml;fi;
 
 echo "registries:" >> ./better/registries.yml
