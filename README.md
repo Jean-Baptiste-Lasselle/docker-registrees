@@ -30,7 +30,7 @@ Docker Registry Manager is a golang written, beego driven, web interface for int
  Install compose (https://docs.docker.com/compose/install/), and then run the below commands
 
  ```bash
-git clone https://github.com/Jean-Baptiste-Lasselle/docker-registrees.git && cd docker-registry-manager
+git clone https://github.com/Jean-Baptiste-Lasselle/docker-registrees.git && cd docker-registrees 
 if [ -f ./better/registries.yml ]; then  rm -f ./better/registries.yml;fi;
 
 echo "registries:" >> ./better/registries.yml
