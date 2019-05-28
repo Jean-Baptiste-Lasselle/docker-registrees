@@ -32,4 +32,4 @@ services:
 
 networks:
   local:
-driver: bridge
+    driver: bridge
