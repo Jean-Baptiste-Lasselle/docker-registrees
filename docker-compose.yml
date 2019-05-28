@@ -5,7 +5,7 @@ services:
     build: .
     hostname: manager
     networks: 
-      - local
+      - reseau_devops
     ports:
       - "8080:8080"
     depends_on:
@@ -27,9 +27,13 @@ services:
     hostname: registry
     ports:
       - "5000:5000"
+    environment:
+      # Dixit https://docs.docker.com/registry/configuration/#delete
+      # Use the 'delete' structure to enable the deletion of image blobs and manifests by digest.
+      - REGISTRY_DELETE_ENABLED=true
     networks:
-      - local
+      - reseau_devops
 
 networks:
-  local:
+  reseau_devops:
     driver: bridge
