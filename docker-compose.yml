@@ -2,7 +2,7 @@ version: '3'
 
 services:
   docker-registry-manager:
-    container_name: 'docker-registry-manager'
+    container_name: 'docker_registry_manager'
     build: .
     hostname: manager
     networks: 
@@ -22,8 +22,8 @@ services:
       #- MANAGER_ENABLE_HTTPS=true
       #- MANAGER_KEY=/app/ssl.crt
       #- MANAGER_CERTIFICATE=/app/ssl.key
-  registry:
-    container_name: 'awx_docker_registry'
+  awx_docker_registry:
+    container_name: 'awx_dock_registry'
     image: registry:2
     restart: always
     hostname: registry
