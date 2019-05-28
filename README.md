@@ -103,3 +103,121 @@ registries:
     skip-tls-validation: true # REQUIRED for self signed certificates
     dockerhub-integration: true # Optional - compares to dockerhub to determine if image up to date
 ```
+
+# ANNEXE 1
+
+## Pushing an image to registry, from remote machine
+
+Le test ci-dessous, démontre que docker interdit une connexion HTTP , et oblige une
+connexion `SSL/TLS` `HTTPS`, pour faire un `docker push` (cf. la doc. officielle Docker,  [`Run an externally-accessible registry`](https://docs.docker.com/registry/deploying/#run-an-externally-accessible-registry) ) :
+
+```bash
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker run -d -p 5000:5000 --name awx-registry -e REGISTRY_DELETE_ENABLED=true registry:2
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker ps -a
+CONTAINER ID        IMAGE                             COMMAND                  CREATED             STATUS              PORTS                                            NAMES
+3e06d249d86a        registry:2                        "/entrypoint.sh /etc…"   4 seconds ago       Up 3 seconds        0.0.0.0:5000->5000/tcp                           awx-registry
+a745392b8ff1        snagles/docker-registry-manager   "/app/app"               7 minutes ago       Up 7 minutes        0.0.0.0:5001->5000/tcp, 0.0.0.0:8081->8080/tcp   docker-registry-manager
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker ps -a
+CONTAINER ID        IMAGE                             COMMAND                  CREATED             STATUS              PORTS                                            NAMES
+3e06d249d86a        registry:2                        "/entrypoint.sh /etc…"   23 minutes ago      Up 23 minutes       0.0.0.0:5000->5000/tcp                           awx-registry
+a745392b8ff1        snagles/docker-registry-manager   "/app/app"               30 minutes ago      Up 30 minutes       0.0.0.0:5001->5000/tcp, 0.0.0.0:8081->8080/tcp   docker-registry-manager
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker pull centos:8
+Error response from daemon: manifest for centos:8 not found
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker pull centos:6
+6: Pulling from library/centos
+ff50d722b382: Pull complete
+Digest: sha256:dec8f471302de43f4cfcf82f56d99a5227b5ea1aa6d02fa56344986e1f4610e7
+Status: Downloaded newer image for centos:6
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker images
+REPOSITORY                        TAG                 IMAGE ID            CREATED             SIZE
+centos                            6                   d0957ffdf8a2        2 months ago        194MB
+registry                          2                   f32a97de94e1        2 months ago        25.8MB
+hello-world                       latest              fce289e99eb9        4 months ago        1.84kB
+snagles/docker-registry-manager   latest              9e75f9744e04        7 months ago        23MB
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker tag d0957ffdf8a2 192.168.1.22:5000/pegasus/centos:6
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker push 192.168.1.22:5000/pegasus/centos:6
+The push refers to repository [192.168.1.22:5000/pegasus/centos]
+Get https://192.168.1.22:5000/v2/: http: server gave HTTP response to HTTPS client
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker images
+REPOSITORY                         TAG                 IMAGE ID            CREATED             SIZE
+192.168.1.22:5000/pegasus/centos   6                   d0957ffdf8a2        2 months ago        194MB
+centos                             6                   d0957ffdf8a2        2 months ago        194MB
+registry                           2                   f32a97de94e1        2 months ago        25.8MB
+hello-world                        latest              fce289e99eb9        4 months ago        1.84kB
+snagles/docker-registry-manager    latest              9e75f9744e04        7 months ago        23MB
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker push d0957ffdf8a2
+The push refers to repository [docker.io/library/d0957ffdf8a2]
+An image does not exist locally with the tag: d0957ffdf8a2
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker pull 192.168.1.22:5000/pegasus/centos:6
+Error response from daemon: Get https://192.168.1.22:5000/v2/: http: server gave HTTP response to HTTPS client
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker push http://192.168.1.22:5000/pegasus/centos:6
+invalid reference format
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker push 192.168.1.22:5000/pegasus/centos:6
+The push refers to repository [192.168.1.22:5000/pegasus/centos]
+Get https://192.168.1.22:5000/v2/: http: server gave HTTP response to HTTPS client
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker push localhost:5000/pegasus/centos:6
+The push refers to repository [localhost:5000/pegasus/centos]
+An image does not exist locally with the tag: localhost:5000/pegasus/centos
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker tag d0957ffdf8a2 localhost:5000/pegasus/centos:6
+jbl@poste-devops-typique:~/docker-registrees/registrees$ docker push localhost:5000/pegasus/centos:6
+The push refers to repository [localhost:5000/pegasus/centos]
+af6bf1987c2e: Pushed
+6: digest: sha256:9aae95c8043f4e401178d68006756dc68982ae6d0693b71a714754227ce0abc6 size: 529
+jbl@poste-devops-typique:~/docker-registrees/registrees$
+
+```
+
+* The configuration file that the private registry docker relies on, is (le fichier de configuration du registry docker privé est) :
+
+```bash
+docker exec -it awx_dock_registry sh -c "cat /etc/docker/registry/config.yml"
+```
+* The configuration that worked for me, which was required, even if using the `REGISTRY_DELETE_ENABLED=true|false` envrionment variable in the `docker-compse.yml`, for the docker registry manager app to be able to delete `oci` images by digests  (Et la configuration qui a fonctionné, pour que le `docker_registry_manager` puisse supprimer des `digest`, c-a-d. des versions d'images docker) :
+
+```YAML
+version: 0.1
+log:
+  fields:
+    service: registry
+storage:
+  cache:
+    blobdescriptor: inmemory
+  filesystem:
+    rootdirectory: /var/lib/registry
+  delete:                                                                                                                                                                             
+    enabled: true
+http:
+  addr: :5000
+  headers:
+    X-Content-Type-Options: [nosniff]
+health:
+  storagedriver:
+    enabled: true
+    interval: 10s
+    threshold: 3
+```
+
+* A more refined configuration, infering a perisstence of the images in an external  database (Une configuration plus étoffée, pour persister les données de registry; les images docker, dans une base de données dans un conteneur distinct du conteneur du `private docker registry` ) :
+
+```YAML
+version: 0.1
+log:
+  fields:
+    service: registry
+storage:
+  cache:
+    blobdescriptor: inmemory
+  filesystem:
+    rootdirectory: /var/lib/registry
+  delete:                                                                                                                                                                             
+    enabled: true
+http:
+  addr: :5000
+  headers:
+    X-Content-Type-Options: [nosniff]
+health:
+  storagedriver:
+    enabled: true
+    interval: 10s
+    threshold: 3
+```
