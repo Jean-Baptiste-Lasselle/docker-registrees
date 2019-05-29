@@ -47,8 +47,10 @@ services:
     image: certbot/certbot
     restart: unless-stopped
     volumes:
-      - ./data/certbot/conf:/etc/letsencrypt
-      - ./data/certbot/www:/var/www/certbot
+      # - ./data/certbot/conf:/etc/letsencrypt
+      - $PEGASUS_AWX_DOCKER_REGISTRY_TLS_SECRETS:/etc/letsencrypt
+      # - ./data/certbot/www:/var/www/certbot
+      - $PEGASUS_AWX_DOCKER_REGISTRY_TLS_SECRETS:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     networks:
       - reseau_devops
