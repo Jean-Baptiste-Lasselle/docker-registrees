@@ -10,7 +10,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - registry
+      - awx_docker_registry
     volumes:
       - ./registries-test.yml:/app/registries.yml
       #- ./ssl.crt:/app/ssl.crt # https certfile location
