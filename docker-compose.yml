@@ -29,13 +29,29 @@ services:
     hostname: registry
     ports:
       - "5000:5000"
+    volumes:
+      - $PEGASUS_AWX_DOCKER_REGISTRY_AUTH_SECRETS:/auth/
+      - $PEGASUS_AWX_DOCKER_REGISTRY_TLS_SECRETS:/certs
     environment:
       # Dixit https://docs.docker.com/registry/configuration/#delete
       # Use the 'delete' structure to enable the deletion of image blobs and manifests by digest.
       - REGISTRY_DELETE_ENABLED=true
+      - REGISTRY_AUTH=htpasswd
+      - REGISTRY_AUTH_HTPASSWD_REALM='Registry Realm'
+      - REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt
+      - REGISTRY_HTTP_TLS_KEY=/certs/domain.key
     networks:
       - reseau_devops
-
+  # https://medium.com/@pentacent/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./data/certbot/conf:/etc/letsencrypt
+      - ./data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - reseau_devops
 networks:
   reseau_devops:
     driver: bridge
