@@ -49,9 +49,7 @@ services:
     image: certbot/certbot
     restart: unless-stopped
     volumes:
-      # Apparently, because of https://github.com/ClusterHQ/dvol/issues/67, I can't use an env variable to define a mapped volume
-      - ./.secrets/tls/:/etc/letsencrypt
-      - ./.secrets/tls/:/var/www/certbot
+      - ./.secrets/tls/:/certs
       # - ./data/certbot/conf:/etc/letsencrypt
       # - ./data/certbot/www:/var/www/certbot
     environment:
