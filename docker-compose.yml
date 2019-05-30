@@ -32,7 +32,7 @@ services:
     volumes:
       - ./conf/config.yml:/etc/docker/registry/config.yml
       - ./.secrets/auth/:/auth/
-      - ./.secrets/tls/:/certs
+      - ./.secrets/tls/awx.docker-pegasus.io/:/certs
     environment:
       # Dixit https://docs.docker.com/registry/configuration/#delete
       # Use the 'delete' structure to enable the deletion of image blobs and manifests by digest.
