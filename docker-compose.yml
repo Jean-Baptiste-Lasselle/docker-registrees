@@ -30,12 +30,13 @@ services:
     ports:
       - "5000:5000"
     volumes:
+      - ./conf/config.yml:/etc/docker/registry/config.yml
       - ./.secrets/auth/:/auth/
       - ./.secrets/tls/:/certs
     environment:
       # Dixit https://docs.docker.com/registry/configuration/#delete
       # Use the 'delete' structure to enable the deletion of image blobs and manifests by digest.
-      - REGISTRY_DELETE_ENABLED=true
+      - REGISTRY_STORAGE_DELETE_ENABLED=true
       - REGISTRY_AUTH=htpasswd
       - REGISTRY_AUTH_HTPASSWD_REALM='Registry Realm'
       - REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt
@@ -48,7 +49,6 @@ services:
     image: certbot/certbot
     restart: unless-stopped
     volumes:
-      - ./conf/config.yml:/etc/docker/registry/config.yml
       # Apparently, because of https://github.com/ClusterHQ/dvol/issues/67, I can't use an env variable to define a mapped volume
       - ./.secrets/tls/:/etc/letsencrypt
       - ./.secrets/tls/:/var/www/certbot
