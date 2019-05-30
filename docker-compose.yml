@@ -39,7 +39,7 @@ services:
       # Use the 'delete' structure to enable the deletion of image blobs and manifests by digest.
       - REGISTRY_STORAGE_DELETE_ENABLED=true
       - REGISTRY_AUTH=htpasswd
-      - REGISTRY_AUTH_HTPASSWD_REALM='Registry Realm'
+      - REGISTRY_AUTH_HTPASSWD_REALM='basic-realm'
       - REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd
       - REGISTRY_HTTP_TLS_CERTIFICATE=/certs/fullchain.pem
       - REGISTRY_HTTP_TLS_KEY=/certs/privkey.pem
