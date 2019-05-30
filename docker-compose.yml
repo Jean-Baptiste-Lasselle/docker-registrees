@@ -48,6 +48,7 @@ services:
     image: certbot/certbot
     restart: unless-stopped
     volumes:
+      - ./conf/config.yml:/etc/docker/registry/config.yml
       # Apparently, because of https://github.com/ClusterHQ/dvol/issues/67, I can't use an env variable to define a mapped volume
       - ./.secrets/tls/:/etc/letsencrypt
       - ./.secrets/tls/:/var/www/certbot
