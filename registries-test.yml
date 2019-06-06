@@ -5,6 +5,6 @@ registries:
     port: 5000 # Example: 443, 8080, 5000
     username: pegasus
     password: 9egasus1
-    refresh-rate: "5m" # Example: 60s, 5m, 1h
+    refresh-rate: "5s" # Example: 60s, 5m, 1h
     #skip-tls-validation: true # REQUIRED for self signed certificates
     #dockerhub-integration: true # Optional - compares to dockerhub to determine if image up to date
