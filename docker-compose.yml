@@ -5,8 +5,9 @@ services:
     container_name: 'docker_registry_manager'
     build: .
     hostname: manager
-    networks: 
+    networks:
       - reseau_devops
+      - pegasus_pipeline_net
     ports:
       - "8080:8080"
     depends_on:
@@ -61,4 +62,6 @@ services:
       - reseau_devops
 networks:
   reseau_devops:
+    driver: bridge
+  pegasus_pipeline_net:
     driver: bridge
