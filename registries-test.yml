@@ -6,5 +6,5 @@ registries:
     username: pegasus
     password: 9egasus1
     refresh-rate: "5m" # Example: 60s, 5m, 1h
-    #skip-tls-validation: true # REQUIRED for self signed certificates
+    skip-tls-validation: true # REQUIRED for self signed certificates
     #dockerhub-integration: true # Optional - compares to dockerhub to determine if image up to date
