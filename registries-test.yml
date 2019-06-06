@@ -1,6 +1,6 @@
 registries:
  exampleRegistry:
-    displayname: localhost
+    displayname: awx_dock_registry
     url: https://awx_dock_registry
     port: 5000 # Example: 443, 8080, 5000
     username: pegasus
